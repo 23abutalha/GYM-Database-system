@@ -21,8 +21,8 @@ This system was architected and developed collaboratively by:
 
 Abu Talha Saleem (Project Lead)
 
-Muhammad Bilal Saeed
+Muhammad Tayyab Shahid
 
-Hassan Waqas
+Sabahat Noor
 
-Arsalan Qadir
+Zain ul Abideen
