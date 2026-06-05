@@ -1,0 +1,2133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gym Management Database - Documentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #1a3a52;
+            --secondary-color: #2d5a7b;
+            --accent-color: #e8a537;
+            --accent-light: #f5d67b;
+            --text-dark: #2c3e50;
+            --text-light: #ecf0f1;
+            --border-color: #d4af86;
+            --success-color: #27ae60;
+            --warning-color: #e67e22;
+            --info-color: #3498db;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text-dark);
+            line-height: 1.8;
+            min-height: 100vh;
+        }
+
+        /* Header Section */
+        .header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: var(--text-light);
+            padding: 60px 40px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="20" fill="rgba(255,255,255,0.03)"/><circle cx="80" cy="80" r="30" fill="rgba(255,255,255,0.05)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+            animation: slideDown 0.8s ease-out;
+        }
+
+        .project-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5em;
+            font-weight: 800;
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .project-badge {
+            display: inline-block;
+            background: var(--accent-color);
+            color: var(--primary-color);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 700;
+            margin: 15px 0;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .header-meta {
+            font-size: 1.1em;
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            opacity: 0.95;
+        }
+
+        .meta-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .meta-label {
+            font-weight: 700;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.85;
+        }
+
+        .meta-value {
+            font-size: 1.2em;
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        /* Cards and Sections */
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            margin-bottom: 35px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2em;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--accent-color);
+            display: inline-block;
+        }
+
+        .subsection-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6em;
+            color: var(--secondary-color);
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+
+        /* Team Section */
+        .team-grid {
+            margin-top: 30px;
+        }
+
+        .instructor-card {
+            background: linear-gradient(135deg, #fff9e6 0%, #fffbf0 100%);
+            border-left: 5px solid var(--accent-color);
+            padding: 25px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .instructor-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.4em;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .instructor-name {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+
+        /* Team Members Table */
+        .team-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+
+        .team-table thead {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+        }
+
+        .team-table th {
+            padding: 18px;
+            text-align: left;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.9em;
+            letter-spacing: 1px;
+        }
+
+        .team-table td {
+            padding: 16px 18px;
+            border-bottom: 1px solid #ecf0f1;
+            font-size: 0.95em;
+        }
+
+        .team-table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .team-table tbody tr:hover {
+            background-color: #f8f9fa;
+            box-shadow: inset 0 0 10px rgba(232, 165, 55, 0.1);
+        }
+
+        .team-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .role-badge {
+            display: inline-block;
+            background: var(--accent-light);
+            color: var(--primary-color);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.85em;
+        }
+
+        /* Database Content Sections */
+        .database-overview {
+            background: linear-gradient(135deg, #f0f4ff 0%, #e8f1ff 100%);
+            border-left: 5px solid var(--info-color);
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        /* Tables Documentation */
+        .tables-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .table-card {
+            background: linear-gradient(135deg, #f9f9f9 0%, #ffffff 100%);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .table-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(232, 165, 55, 0.2);
+            border-color: var(--accent-color);
+        }
+
+        .table-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3em;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .table-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .field-list {
+            list-style: none;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .field-list li {
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .field-list li:last-child {
+            border-bottom: none;
+        }
+
+        .field-type {
+            color: var(--accent-color);
+            font-weight: 600;
+            font-size: 0.8em;
+        }
+
+        /* Queries Documentation */
+        .queries-section {
+            margin-top: 30px;
+        }
+
+        .query-card {
+            background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
+            border-left: 4px solid var(--info-color);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .query-card:hover {
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.15);
+            border-left-color: var(--accent-color);
+        }
+
+        .query-number {
+            display: inline-block;
+            background: var(--info-color);
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 35px;
+            font-weight: 700;
+            margin-right: 12px;
+            font-size: 0.9em;
+        }
+
+        .query-title {
+            font-weight: 700;
+            font-size: 1.1em;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+
+        .query-description {
+            color: #666;
+            font-size: 0.95em;
+            margin-top: 8px;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            line-height: 1.6;
+            margin-top: 10px;
+            border: 1px solid #34495e;
+            margin-bottom: 20px;
+        }
+
+        .code-label {
+            background: var(--accent-color);
+            color: var(--primary-color);
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: 700;
+            display: inline-block;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .toc {
+            background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
+            padding: 25px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 5px solid var(--accent-color);
+        }
+
+        .toc-title {
+            font-weight: 700;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .toc-list {
+            list-style: none;
+        }
+
+        .toc-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .toc-list li:last-child {
+            border-bottom: none;
+        }
+
+        .toc-list a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .toc-list a:hover {
+            color: var(--accent-color);
+            padding-left: 10px;
+        }
+
+        .appendix-section {
+            margin-top: 30px;
+        }
+
+        .glossary-item {
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .glossary-term {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            font-size: 1.05em;
+        }
+
+        .glossary-definition {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+
+        /* List Styles */
+        .info-list {
+            list-style: none;
+            margin: 20px 0;
+        }
+
+        .info-list li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+            color: var(--text-dark);
+        }
+
+        .info-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--accent-color);
+            font-weight: 700;
+            font-size: 1.2em;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .feature-box {
+            background: linear-gradient(135deg, #fff9e6 0%, #fffbf0 100%);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .feature-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .feature-title {
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 8px;
+        }
+
+        .feature-desc {
+            font-size: 0.9em;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Stats Section */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(26, 58, 82, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .stat-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(232, 165, 55, 0.3);
+        }
+
+        .stat-number {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5em;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9em;
+            letter-spacing: 1px;
+            opacity: 0.95;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--primary-color);
+            color: var(--text-light);
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 50px;
+            border-top: 3px solid var(--accent-color);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        .footer-text {
+            opacity: 0.9;
+            font-size: 0.95em;
+        }
+
+        /* Animations */
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .project-title {
+                font-size: 2.2em;
+            }
+
+            .section {
+                padding: 25px;
+            }
+
+            .header-meta {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .tables-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-title {
+                font-size: 1.8em;
+            }
+        }
+
+        /* Scroll Enhancement */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+            }
+            .section {
+                page-break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <h1 class="project-title">Gym Management Database</h1>
+            <span class="project-badge">Spring 2026 Project</span>
+            <div class="header-meta">
+                <div class="meta-item">
+                    <span class="meta-label">University</span>
+                    <span class="meta-value">UMT, Lahore</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Department</span>
+                    <span class="meta-value">Artificial Intelligence</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Course</span>
+                    <span class="meta-value">Database Systems (CC230)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Table of Contents -->
+        <div class="section">
+            <h2 class="section-title">📑 Table of Contents</h2>
+            <div class="toc">
+                <div class="toc-title">Quick Navigation</div>
+                <ul class="toc-list">
+                    <li><a href="#overview">Project Overview</a></li>
+                    <li><a href="#team">Project Team & Instructor</a></li>
+                    <li><a href="#statistics">Database Statistics</a></li>
+                    <li><a href="#features">Key Features</a></li>
+                    <li><a href="#schema">Database Schema</a></li>
+                    <li><a href="#erd">Entity Relationship Diagram</a></li>
+                    <li><a href="#code-examples">SQL Code Examples</a></li>
+                    <li><a href="#queries">Comprehensive Query Suite</a></li>
+                    <li><a href="#technical">Technical Specifications</a></li>
+                    <li><a href="#implementation">Implementation Notes</a></li>
+                    <li><a href="#use-cases">Business Use Cases</a></li>
+                    <li><a href="#appendix">Appendix & References</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Project Overview -->
+        <div class="section" id="overview">
+            <h2 class="section-title">📋 Project Overview</h2>
+            <div class="database-overview">
+                <strong>Project Objective:</strong> Develop a comprehensive Relational Database Management System (RDBMS) for a multi-branch gym franchise with complete DDL, DML, DCL, and TCL implementations. The database follows 3NF normalization and is compatible with Microsoft SQL Server (SSMS).
+            </div>
+            <h3 class="subsection-title">System Architecture</h3>
+            <p>This full-featured gym management system encompasses member management, staff administration, trainer coordination, membership planning, attendance tracking, equipment inventory, class scheduling, and payment processing across multiple branches.</p>
+        </div>
+
+        <!-- Instructor & Team Section -->
+        <div class="section" id="team">
+            <h2 class="section-title">👨‍🏫 Project Team</h2>
+            
+            <div class="instructor-card">
+                <div class="instructor-title">Course Instructor</div>
+                <div class="instructor-name">Hafiza Daheem</div>
+            </div>
+
+            <h3 class="subsection-title">Team Members</h3>
+            <table class="team-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Student ID</th>
+                        <th>Designation</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Abu Talha Saleem</strong></td>
+                        <td>F2024376221</td>
+                        <td><span class="role-badge">Team Leader</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tayyab Shahid</strong></td>
+                        <td>F2024266555</td>
+                        <td><span class="role-badge">Member</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Sabahat Noor</strong></td>
+                        <td>F2024266590</td>
+                        <td><span class="role-badge">Member</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Zain ul Abideen</strong></td>
+                        <td>F2024266567</td>
+                        <td><span class="role-badge">Member</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Key Statistics -->
+        <div class="section" id="statistics">
+            <h2 class="section-title">📊 Database Statistics</h2>
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-number">11</div>
+                    <div class="stat-label">Database Tables</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">22</div>
+                    <div class="stat-label">SQL Queries</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">110+</div>
+                    <div class="stat-label">Sample Records</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">6</div>
+                    <div class="stat-label">Strategic Indexes</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Database Features -->
+        <div class="section" id="features">
+            <h2 class="section-title">✨ Key Features</h2>
+            <div class="features-grid">
+                <div class="feature-box">
+                    <div class="feature-icon">🏢</div>
+                    <div class="feature-title">Multi-Branch Support</div>
+                    <div class="feature-desc">Manage operations across 5 different gym branches with centralized data control and branch-specific reporting.</div>
+                </div>
+                <div class="feature-box">
+                    <div class="feature-icon">👥</div>
+                    <div class="feature-title">Comprehensive Member Management</div>
+                    <div class="feature-desc">Track member details, memberships, attendance, and emergency contacts with full historical records.</div>
+                </div>
+                <div class="feature-box">
+                    <div class="feature-icon">💪</div>
+                    <div class="feature-title">Class & Trainer Management</div>
+                    <div class="feature-desc">Schedule classes, manage trainer assignments, track enrollments, and monitor trainer specializations.</div>
+                </div>
+                <div class="feature-box">
+                    <div class="feature-icon">💳</div>
+                    <div class="feature-title">Payment Processing</div>
+                    <div class="feature-desc">Handle multiple payment methods with transaction tracking, receipt generation, and financial reporting.</div>
+                </div>
+                <div class="feature-box">
+                    <div class="feature-icon">🔧</div>
+                    <div class="feature-title">Equipment Inventory</div>
+                    <div class="feature-desc">Monitor equipment condition, maintenance status, warranty details, and asset valuation.</div>
+                </div>
+                <div class="feature-box">
+                    <div class="feature-icon">📈</div>
+                    <div class="feature-title">Advanced Analytics</div>
+                    <div class="feature-desc">Generate insights on membership trends, revenue analysis, member engagement, and operational costs.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Database Schema -->
+        <div class="section" id="schema">
+            <h2 class="section-title">🗄️ Database Schema</h2>
+            
+            <h3 class="subsection-title">Core Tables Documentation</h3>
+            <div class="tables-grid">
+                <div class="table-card">
+                    <div class="table-icon">🏪</div>
+                    <div class="table-name">Branches</div>
+                    <p style="font-size: 0.9em; color: #666; margin-bottom: 10px;">Multi-location gym details and operational parameters</p>
+                    <ul class="field-list">
+                        <li>BranchID <span class="field-type">PK</span></li>
+                        <li>BranchName</li>
+                        <li>City, Address</li>
+                        <li>PhoneNumber, Email</li>
+                        <li>OpeningTime, ClosingTime</li>
+                        <li>MonthlyRent, IsActive</li>
+                    </ul>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-icon">👨‍💼</div>
+                    <div class="table-name">Staff</div>
+                    <p style="font-size: 0.9em; color: #666; margin-bottom: 10px;">Administrative and support personnel</p>
+                    <ul class="field-list">
+                        <li>StaffID <span class="field-type">PK</span></li>
+                        <li>BranchID <span class="field-type">FK</span></li>
+                        <li>FirstName, LastName</li>
+                        <li>Role (Manager, Receptionist, etc.)</li>
+                        <li>Salary, HireDate</li>
+                        <li>Contact Information</li>
+                    </ul>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-icon">🏋️</div>
+                    <div class="table-name">Trainers</div>
+                    <p style="font-size: 0.9em; color: #666; margin-bottom: 10px;">Professional fitness trainers and specializations</p>
+                    <ul class="field-list">
+                        <li>TrainerID <span class="field-type">PK</span></li>
+                        <li>BranchID <span class="field-type">FK</span></li>
+                        <li>FirstName, LastName</li>
+                        <li>Specialization</li>
+                        <li>Experience, Certification</li>
+                        <li>Salary, Contact Details</li>
+                    </ul>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-icon">🧑‍🤝‍🧑</div>
+                    <div class="table-name">Members</div>
+                    <p style="font-size: 0.9em; color: #666; margin-bottom: 10px;">Active gym members with health information</p>
+                    <ul class="field-list">
+                        <li>MemberID <span class="field-type">PK</span></li>
+                        <li>BranchID <span class="field-type">FK</span></li>
+                        <li>FirstName, LastName, Gender</li>
+                        <li>DateOfBirth, JoinDate</li>
+                        <li>BloodGroup, EmergencyContact</li>
+                        <li>Contact & Address Info</li>
+                    </ul>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-icon">📝</div>
+                    <div class="table-name">MembershipPlans</div>
+                    <p style="font-size: 0.9em; color: #666; margin-bottom: 10px;">Flexible membership packages and pricing</p>
+                    <ul class="field-list">
+                        <li>PlanID <span class="field-type">PK</span></li>
+                        <li>PlanName (Basic, Premium)</li>
+                        <li>DurationDays</li>
+                        <li>Price, Description</li>
+                        <li>MaxFreeze (Days)</li>
+                    </ul>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-icon">🎫</div>
+                    <div class="table-name">MemberMemberships</div>
+                    <p style="font-size: 0.9em; color: #666; margin-bottom: 10px;">Member-Plan association and status tracking</p>
+                    <ul class="field-list">
+                        <li>MembershipID <span class="field-type">PK</span></li>
+                        <li>MemberID <span class="field-type">FK</span></li>
+                        <li>PlanID <span class="field-type">FK</span></li>
+                        <li>StartDate, EndDate</li>
+                        <li>Status (Active, Expired, Frozen, Cancelled)</li>
+                        <li>FreezeDays</li>
+                    </ul>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-icon">🎤</div>
+                    <div class="table-name">GymClasses</div>
+                    <p style="font-size: 0.9em; color: #666; margin-bottom: 10px;">Scheduled fitness classes and sessions</p>
+                    <ul class="field-list">
+                        <li>ClassID <span class="field-type">PK</span></li>
+                        <li>BranchID, TrainerID <span class="field-type">FK</span></li>
+                        <li>ClassName, ClassType</li>
+                        <li>ScheduleDay, StartTime, EndTime</li>
+                        <li>MaxCapacity, RoomNumber</li>
+                    </ul>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-icon">📋</div>
+                    <div class="table-name">ClassEnrollments</div>
+                    <p style="font-size: 0.9em; color: #666; margin-bottom: 10px;">Member class participation tracking</p>
+                    <ul class="field-list">
+                        <li>EnrollmentID <span class="field-type">PK</span></li>
+                        <li>ClassID, MemberID <span class="field-type">FK</span></li>
+                        <li>EnrollDate</li>
+                        <li>Status (Enrolled, Dropped, Completed)</li>
+                        <li>Unique Constraint: ClassID + MemberID</li>
+                    </ul>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-icon">🏋️‍♀️</div>
+                    <div class="table-name">Equipment</div>
+                    <p style="font-size: 0.9em; color: #666; margin-bottom: 10px;">Fitness equipment inventory and maintenance</p>
+                    <ul class="field-list">
+                        <li>EquipmentID <span class="field-type">PK</span></li>
+                        <li>BranchID <span class="field-type">FK</span></li>
+                        <li>EquipmentName, Category</li>
+                        <li>PurchaseDate, Condition</li>
+                        <li>PurchasePrice, WarrantyYears</li>
+                    </ul>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-icon">📅</div>
+                    <div class="table-name">Attendance</div>
+                    <p style="font-size: 0.9em; color: #666; margin-bottom: 10px;">Member gym visit tracking with timestamps</p>
+                    <ul class="field-list">
+                        <li>AttendanceID <span class="field-type">PK</span></li>
+                        <li>MemberID, BranchID <span class="field-type">FK</span></li>
+                        <li>CheckInDate, CheckInTime</li>
+                        <li>CheckOutTime</li>
+                        <li>Notes</li>
+                    </ul>
+                </div>
+
+                <div class="table-card">
+                    <div class="table-icon">💰</div>
+                    <div class="table-name">Payments</div>
+                    <p style="font-size: 0.9em; color: #666; margin-bottom: 10px;">Transaction records and financial management</p>
+                    <ul class="field-list">
+                        <li>PaymentID <span class="field-type">PK</span></li>
+                        <li>MemberID, MembershipID <span class="field-type">FK</span></li>
+                        <li>Amount, PaymentDate</li>
+                        <li>PaymentMethod</li>
+                        <li>Status (Completed, Pending, Refunded)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Constraints and Integrity -->
+        <div class="section">
+            <h2 class="section-title">🔒 Data Integrity & Constraints</h2>
+            <h3 class="subsection-title">Primary & Foreign Keys</h3>
+            <ul class="info-list">
+                <li>All tables have IDENTITY primary keys with auto-increment starting from 1</li>
+                <li>Foreign key relationships enforce referential integrity across all dependent tables</li>
+                <li>Cascading rules properly configured for data consistency</li>
+            </ul>
+            
+            <h3 class="subsection-title">Business Logic Constraints</h3>
+            <ul class="info-list">
+                <li><strong>Salary Constraints:</strong> Must be >= 0 (non-negative)</li>
+                <li><strong>Price Constraints:</strong> Must be > 0 (positive values only)</li>
+                <li><strong>Duration Constraints:</strong> Plan duration must be > 0 days</li>
+                <li><strong>Enum Constraints:</strong> Role, Gender, Status fields restricted to valid values</li>
+                <li><strong>Check Constraints:</strong> Experience years must be >= 0</li>
+                <li><strong>Unique Constraints:</strong> Email addresses and Class-Member combinations must be unique</li>
+                <li><strong>Date Constraints:</strong> EndDate must be after StartDate for memberships</li>
+            </ul>
+        </div>
+
+        <!-- Indexes -->
+        <div class="section">
+            <h2 class="section-title">⚡ Query Performance Indexes</h2>
+            <p>The following indexes optimize common query patterns and improve retrieval performance:</p>
+            <div class="info-list" style="margin-top: 20px;">
+                <li><strong>IX_Members_BranchID</strong> - Accelerates member queries by branch</li>
+                <li><strong>IX_Attendance_MemberID</strong> - Speeds up attendance records lookup</li>
+                <li><strong>IX_Attendance_CheckInDate</strong> - Enables date-range attendance reports</li>
+                <li><strong>IX_Payments_MemberID</strong> - Optimizes payment transaction queries</li>
+                <li><strong>IX_ClassEnrollments_Member</strong> - Enhances class enrollment lookups by member</li>
+            </div>
+        </div>
+
+        <!-- Entity Relationship Diagram -->
+        <div class="section" id="erd">
+            <h2 class="section-title">🔗 Entity Relationship Diagram (ERD)</h2>
+            <p>Comprehensive visual representation of the Gym Management Database schema showing all 11 tables, primary keys, foreign keys, and relationships:</p>
+            
+            <svg viewBox="0 0 1400 900" xmlns="http://www.w3.org/2000/svg" style="margin: 20px 0; border: 1px solid #ddd; border-radius: 8px; background: #f9f9f9;">
+                <!-- Define arrow markers for relationships -->
+                <defs>
+                    <marker id="arrowOne" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                        <path d="M0,0 L0,6 L9,3 z" fill="#1a3a52" />
+                    </marker>
+                    <marker id="arrowMany" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+                        <path d="M0,1 L0,5 M2,1 L2,5 M4,1 L4,5 L9,3" fill="none" stroke="#1a3a52" stroke-width="0.5"/>
+                    </marker>
+                    <style>
+                        .entity-box { fill: white; stroke: #1a3a52; stroke-width: 2; }
+                        .entity-title { fill: #fff; font-weight: bold; font-size: 12px; }
+                        .entity-title-bg { fill: #1a3a52; }
+                        .entity-field { fill: #2c3e50; font-size: 10px; }
+                        .pk-field { fill: #e8a537; font-weight: bold; }
+                        .fk-field { fill: #3498db; }
+                        .relationship-line { stroke: #1a3a52; stroke-width: 1.5; fill: none; }
+                        .label-text { fill: #1a3a52; font-size: 9px; font-weight: bold; }
+                    </style>
+                </defs>
+
+                <!-- Branches Table (Top Left) -->
+                <g id="branches">
+                    <rect class="entity-box" x="50" y="20" width="160" height="140"/>
+                    <rect class="entity-title-bg" x="50" y="20" width="160" height="25"/>
+                    <text class="entity-title" x="130" y="36" text-anchor="middle">Branches</text>
+                    <line x1="50" y1="45" x2="210" y2="45" stroke="#1a3a52" stroke-width="1"/>
+                    <text class="pk-field" x="60" y="60">🔑 BranchID (PK)</text>
+                    <text class="entity-field" x="60" y="75">BranchName</text>
+                    <text class="entity-field" x="60" y="90">City, Address</text>
+                    <text class="entity-field" x="60" y="105">PhoneNumber, Email</text>
+                    <text class="entity-field" x="60" y="120">MonthlyRent, IsActive</text>
+                    <text class="entity-field" x="60" y="135">OpeningTime, ClosingTime</text>
+                </g>
+
+                <!-- Members Table (Top Center-Left) -->
+                <g id="members">
+                    <rect class="entity-box" x="280" y="20" width="170" height="160"/>
+                    <rect class="entity-title-bg" x="280" y="20" width="170" height="25"/>
+                    <text class="entity-title" x="365" y="36" text-anchor="middle">Members</text>
+                    <line x1="280" y1="45" x2="450" y2="45" stroke="#1a3a52" stroke-width="1"/>
+                    <text class="pk-field" x="290" y="60">🔑 MemberID (PK)</text>
+                    <text class="fk-field" x="290" y="75">🔗 BranchID (FK)</text>
+                    <text class="entity-field" x="290" y="90">FirstName, LastName</text>
+                    <text class="entity-field" x="290" y="105">Gender, DateOfBirth</text>
+                    <text class="entity-field" x="290" y="120">PhoneNumber, Email</text>
+                    <text class="entity-field" x="290" y="135">JoinDate, BloodGroup</text>
+                    <text class="entity-field" x="290" y="150">EmergencyContact</text>
+                    <text class="entity-field" x="290" y="165">Address</text>
+                </g>
+
+                <!-- Staff Table (Top Center-Right) -->
+                <g id="staff">
+                    <rect class="entity-box" x="510" y="20" width="160" height="140"/>
+                    <rect class="entity-title-bg" x="510" y="20" width="160" height="25"/>
+                    <text class="entity-title" x="590" y="36" text-anchor="middle">Staff</text>
+                    <line x1="510" y1="45" x2="670" y2="45" stroke="#1a3a52" stroke-width="1"/>
+                    <text class="pk-field" x="520" y="60">🔑 StaffID (PK)</text>
+                    <text class="fk-field" x="520" y="75">🔗 BranchID (FK)</text>
+                    <text class="entity-field" x="520" y="90">FirstName, LastName</text>
+                    <text class="entity-field" x="520" y="105">Role, Salary</text>
+                    <text class="entity-field" x="520" y="120">HireDate, PhoneNumber</text>
+                    <text class="entity-field" x="520" y="135">Email, IsActive</text>
+                </g>
+
+                <!-- Trainers Table (Top Right) -->
+                <g id="trainers">
+                    <rect class="entity-box" x="730" y="20" width="170" height="140"/>
+                    <rect class="entity-title-bg" x="730" y="20" width="170" height="25"/>
+                    <text class="entity-title" x="815" y="36" text-anchor="middle">Trainers</text>
+                    <line x1="730" y1="45" x2="900" y2="45" stroke="#1a3a52" stroke-width="1"/>
+                    <text class="pk-field" x="740" y="60">🔑 TrainerID (PK)</text>
+                    <text class="fk-field" x="740" y="75">🔗 BranchID (FK)</text>
+                    <text class="entity-field" x="740" y="90">FirstName, LastName</text>
+                    <text class="entity-field" x="740" y="105">Specialization, Experience</text>
+                    <text class="entity-field" x="740" y="120">Salary, Certification</text>
+                    <text class="entity-field" x="740" y="135">PhoneNumber, Email</text>
+                </g>
+
+                <!-- MembershipPlans Table (Top Far Right) -->
+                <g id="plans">
+                    <rect class="entity-box" x="1000" y="20" width="170" height="120"/>
+                    <rect class="entity-title-bg" x="1000" y="20" width="170" height="25"/>
+                    <text class="entity-title" x="1085" y="36" text-anchor="middle">MembershipPlans</text>
+                    <line x1="1000" y1="45" x2="1170" y2="45" stroke="#1a3a52" stroke-width="1"/>
+                    <text class="pk-field" x="1010" y="60">🔑 PlanID (PK)</text>
+                    <text class="entity-field" x="1010" y="75">PlanName (UNIQUE)</text>
+                    <text class="entity-field" x="1010" y="90">DurationDays, Price</text>
+                    <text class="entity-field" x="1010" y="105">Description, MaxFreeze</text>
+                </g>
+
+                <!-- MemberMemberships Table (Middle Left) -->
+                <g id="memberships">
+                    <rect class="entity-box" x="150" y="220" width="170" height="140"/>
+                    <rect class="entity-title-bg" x="150" y="220" width="170" height="25"/>
+                    <text class="entity-title" x="235" y="236" text-anchor="middle">MemberMemberships</text>
+                    <line x1="150" y1="245" x2="320" y2="245" stroke="#1a3a52" stroke-width="1"/>
+                    <text class="pk-field" x="160" y="260">🔑 MembershipID (PK)</text>
+                    <text class="fk-field" x="160" y="275">🔗 MemberID (FK)</text>
+                    <text class="fk-field" x="160" y="290">🔗 PlanID (FK)</text>
+                    <text class="entity-field" x="160" y="305">StartDate, EndDate</text>
+                    <text class="entity-field" x="160" y="320">Status (Active, Expired...)</text>
+                    <text class="entity-field" x="160" y="335">FreezeDays</text>
+                </g>
+
+                <!-- GymClasses Table (Middle Center) -->
+                <g id="classes">
+                    <rect class="entity-box" x="380" y="220" width="170" height="140"/>
+                    <rect class="entity-title-bg" x="380" y="220" width="170" height="25"/>
+                    <text class="entity-title" x="465" y="236" text-anchor="middle">GymClasses</text>
+                    <line x1="380" y1="245" x2="550" y2="245" stroke="#1a3a52" stroke-width="1"/>
+                    <text class="pk-field" x="390" y="260">🔑 ClassID (PK)</text>
+                    <text class="fk-field" x="390" y="275">🔗 BranchID (FK)</text>
+                    <text class="fk-field" x="390" y="290">🔗 TrainerID (FK)</text>
+                    <text class="entity-field" x="390" y="305">ClassName, ClassType</text>
+                    <text class="entity-field" x="390" y="320">ScheduleDay, StartTime</text>
+                    <text class="entity-field" x="390" y="335">MaxCapacity, RoomNumber</text>
+                </g>
+
+                <!-- ClassEnrollments Table (Middle Right) -->
+                <g id="enrollments">
+                    <rect class="entity-box" x="610" y="220" width="170" height="120"/>
+                    <rect class="entity-title-bg" x="610" y="220" width="170" height="25"/>
+                    <text class="entity-title" x="695" y="236" text-anchor="middle">ClassEnrollments</text>
+                    <line x1="610" y1="245" x2="780" y2="245" stroke="#1a3a52" stroke-width="1"/>
+                    <text class="pk-field" x="620" y="260">🔑 EnrollmentID (PK)</text>
+                    <text class="fk-field" x="620" y="275">🔗 ClassID (FK)</text>
+                    <text class="fk-field" x="620" y="290">🔗 MemberID (FK)</text>
+                    <text class="entity-field" x="620" y="305">EnrollDate</text>
+                    <text class="entity-field" x="620" y="320">Status (UNIQUE: ClassID+MemberID)</text>
+                </g>
+
+                <!-- Equipment Table (Middle Far Right) -->
+                <g id="equipment">
+                    <rect class="entity-box" x="850" y="220" width="170" height="140"/>
+                    <rect class="entity-title-bg" x="850" y="220" width="170" height="25"/>
+                    <text class="entity-title" x="935" y="236" text-anchor="middle">Equipment</text>
+                    <line x1="850" y1="245" x2="1020" y2="245" stroke="#1a3a52" stroke-width="1"/>
+                    <text class="pk-field" x="860" y="260">🔑 EquipmentID (PK)</text>
+                    <text class="fk-field" x="860" y="275">🔗 BranchID (FK)</text>
+                    <text class="entity-field" x="860" y="290">EquipmentName, Category</text>
+                    <text class="entity-field" x="860" y="305">PurchaseDate, Condition</text>
+                    <text class="entity-field" x="860" y="320">PurchasePrice</text>
+                    <text class="entity-field" x="860" y="335">WarrantyYears</text>
+                </g>
+
+                <!-- Attendance Table (Bottom Left) -->
+                <g id="attendance">
+                    <rect class="entity-box" x="1080" y="220" width="170" height="120"/>
+                    <rect class="entity-title-bg" x="1080" y="220" width="170" height="25"/>
+                    <text class="entity-title" x="1165" y="236" text-anchor="middle">Attendance</text>
+                    <line x1="1080" y1="245" x2="1250" y2="245" stroke="#1a3a52" stroke-width="1"/>
+                    <text class="pk-field" x="1090" y="260">🔑 AttendanceID (PK)</text>
+                    <text class="fk-field" x="1090" y="275">🔗 MemberID (FK)</text>
+                    <text class="fk-field" x="1090" y="290">🔗 BranchID (FK)</text>
+                    <text class="entity-field" x="1090" y="305">CheckInDate, CheckInTime</text>
+                    <text class="entity-field" x="1090" y="320">CheckOutTime, Notes</text>
+                </g>
+
+                <!-- Payments Table (Bottom Center) -->
+                <g id="payments">
+                    <rect class="entity-box" x="400" y="450" width="180" height="140"/>
+                    <rect class="entity-title-bg" x="400" y="450" width="180" height="25"/>
+                    <text class="entity-title" x="490" y="466" text-anchor="middle">Payments</text>
+                    <line x1="400" y1="475" x2="580" y2="475" stroke="#1a3a52" stroke-width="1"/>
+                    <text class="pk-field" x="410" y="490">🔑 PaymentID (PK)</text>
+                    <text class="fk-field" x="410" y="505">🔗 MemberID (FK)</text>
+                    <text class="fk-field" x="410" y="520">🔗 MembershipID (FK)</text>
+                    <text class="entity-field" x="410" y="535">Amount, PaymentDate</text>
+                    <text class="entity-field" x="410" y="550">PaymentMethod, Status</text>
+                    <text class="entity-field" x="410" y="565">ReferenceNo</text>
+                </g>
+
+                <!-- RELATIONSHIPS / CONNECTIONS -->
+                
+                <!-- Branches to Members (1:N) -->
+                <path class="relationship-line" d="M 210,90 L 280,90" marker-end="url(#arrowMany)"/>
+                <text class="label-text" x="240" y="85">1:N</text>
+                
+                <!-- Branches to Staff (1:N) -->
+                <path class="relationship-line" d="M 210,130 L 510,110" marker-end="url(#arrowMany)"/>
+                <text class="label-text" x="350" y="115">1:N</text>
+                
+                <!-- Branches to Trainers (1:N) -->
+                <path class="relationship-line" d="M 210,110 L 730,90" marker-end="url(#arrowMany)"/>
+                <text class="label-text" x="470" y="95">1:N</text>
+                
+                <!-- Branches to GymClasses (1:N) -->
+                <path class="relationship-line" d="M 210,160 L 380,290" marker-end="url(#arrowMany)"/>
+                <text class="label-text" x="280" y="220">1:N</text>
+                
+                <!-- Branches to Equipment (1:N) -->
+                <path class="relationship-line" d="M 210,160 L 850,290" marker-end="url(#arrowMany)"/>
+                <text class="label-text" x="500" y="220">1:N</text>
+                
+                <!-- Branches to Attendance (1:N) -->
+                <path class="relationship-line" d="M 210,160 L 1080,290" marker-end="url(#arrowMany)"/>
+                <text class="label-text" x="620" y="220">1:N</text>
+                
+                <!-- Members to MemberMemberships (1:N) -->
+                <path class="relationship-line" d="M 320,180 L 250,220" marker-end="url(#arrowMany)"/>
+                <text class="label-text" x="280" y="195">1:N</text>
+                
+                <!-- Members to ClassEnrollments (1:N) -->
+                <path class="relationship-line" d="M 380,180 L 650,220" marker-end="url(#arrowMany)"/>
+                <text class="label-text" x="500" y="195">1:N</text>
+                
+                <!-- Members to Attendance (1:N) -->
+                <path class="relationship-line" d="M 450,180 L 1120,220" marker-end="url(#arrowMany)"/>
+                <text class="label-text" x="780" y="195">1:N</text>
+                
+                <!-- Members to Payments (1:N) -->
+                <path class="relationship-line" d="M 380,180 L 480,450" marker-end="url(#arrowMany)"/>
+                <text class="label-text" x="420" y="310">1:N</text>
+                
+                <!-- MembershipPlans to MemberMemberships (1:N) -->
+                <path class="relationship-line" d="M 1000,80 L 320,280" marker-end="url(#arrowMany)"/>
+                <text class="label-text" x="650" y="160">1:N</text>
+                
+                <!-- MembershipPlans to Payments (1:N) -->
+                <path class="relationship-line" d="M 1000,140 L 560,450" marker-end="url(#arrowMany)"/>
+                <text class="label-text" x="780" y="280">1:N</text>
+                
+                <!-- Trainers to GymClasses (1:N) -->
+                <path class="relationship-line" d="M 815,160 L 465,220" marker-end="url(#arrowMany)"/>
+                <text class="label-text" x="640" y="185">1:N</text>
+                
+                <!-- GymClasses to ClassEnrollments (1:N) -->
+                <path class="relationship-line" d="M 550,290 L 610,290" marker-end="url(#arrowMany)"/>
+                <text class="label-text" x="575" y="280">1:N</text>
+                
+                <!-- Legend -->
+                <g id="legend" transform="translate(50, 620)">
+                    <rect width="1300" height="120" fill="#f9f9f9" stroke="#ddd" stroke-width="1" rx="4"/>
+                    <text x="10" y="20" font-weight="bold" font-size="12" fill="#1a3a52">LEGEND:</text>
+                    <text x="10" y="40" font-size="11" fill="#2c3e50">🔑 PK = Primary Key (Unique identifier for each record)</text>
+                    <text x="10" y="60" font-size="11" fill="#2c3e50">🔗 FK = Foreign Key (Reference to another table)</text>
+                    <text x="10" y="80" font-size="11" fill="#2c3e50">1:N = One-to-Many relationship (One branch has many members)</text>
+                    <text x="550" y="40" font-size="11" fill="#2c3e50">Cardinality: Shows how many records in one table relate to another</text>
+                    <text x="550" y="60" font-size="11" fill="#2c3e50">Blue boxes indicate relationship tables (junction/bridge tables)</text>
+                    <text x="550" y="80" font-size="11" fill="#2c3e50">All relationships enforce referential integrity through foreign keys</text>
+                </g>
+            </svg>
+
+            <h3 class="subsection-title">Relationship Overview</h3>
+            <div style="background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%); padding: 20px; border-radius: 8px; margin-top: 20px;">
+                <p><strong>Core Entities:</strong></p>
+                <ul class="info-list">
+                    <li><strong>Branches</strong> - The hub entity; serves as the organizational unit for all location-based data</li>
+                    <li><strong>Members</strong> - Primary entity for member information; connects to memberships, classes, attendance, and payments</li>
+                    <li><strong>MembershipPlans</strong> - Reference entity defining pricing tiers; many-to-many with Members through MemberMemberships</li>
+                    <li><strong>Trainers</strong> - Personnel entity; associates with GymClasses to enable class scheduling</li>
+                    <li><strong>Staff</strong> - Personnel entity for administrative and support roles at each branch</li>
+                </ul>
+
+                <p style="margin-top: 15px;"><strong>Association Entities:</strong></p>
+                <ul class="info-list">
+                    <li><strong>MemberMemberships</strong> - Bridge table connecting Members (N) to MembershipPlans (N), tracking validity dates and status</li>
+                    <li><strong>ClassEnrollments</strong> - Bridge table connecting Members (N) to GymClasses (N), tracking enrollment status</li>
+                </ul>
+
+                <p style="margin-top: 15px;"><strong>Transactional Entities:</strong></p>
+                <ul class="info-list">
+                    <li><strong>Payments</strong> - Financial transactions; references Members and MemberMemberships; has 20+ sample records</li>
+                    <li><strong>Attendance</strong> - Check-in/check-out records; references Members and Branches; tracks gym usage</li>
+                </ul>
+
+                <p style="margin-top: 15px;"><strong>Inventory Entities:</strong></p>
+                <ul class="info-list">
+                    <li><strong>Equipment</strong> - Asset tracking entity; references Branches; monitors condition and warranty</li>
+                    <li><strong>GymClasses</strong> - Service entity; references Branches and Trainers; schedule information</li>
+                </ul>
+            </div>
+
+            <h3 class="subsection-title">Cardinality & Relationship Types</h3>
+            <table style="width: 100%; margin-top: 15px; border-collapse: collapse; background: white;">
+                <thead style="background: var(--primary-color); color: white;">
+                    <tr>
+                        <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Parent Table</th>
+                        <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Child Table</th>
+                        <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Relationship</th>
+                        <th style="padding: 12px; text-align: left; border: 1px solid #ddd;">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="background: #f9f9f9;">
+                        <td style="padding: 12px; border: 1px solid #ddd;">Branches</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">Members</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;"><strong>1:N</strong></td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">One branch has many members</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px; border: 1px solid #ddd;">Branches</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">Staff</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;"><strong>1:N</strong></td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">One branch has many staff members</td>
+                    </tr>
+                    <tr style="background: #f9f9f9;">
+                        <td style="padding: 12px; border: 1px solid #ddd;">Branches</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">Trainers</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;"><strong>1:N</strong></td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">One branch has multiple trainers</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px; border: 1px solid #ddd;">Members</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">MemberMemberships</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;"><strong>1:N</strong></td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">One member has many memberships (history)</td>
+                    </tr>
+                    <tr style="background: #f9f9f9;">
+                        <td style="padding: 12px; border: 1px solid #ddd;">MembershipPlans</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">MemberMemberships</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;"><strong>1:N</strong></td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">One plan has many member subscriptions</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px; border: 1px solid #ddd;">GymClasses</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">ClassEnrollments</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;"><strong>1:N</strong></td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">One class has many member enrollments</td>
+                    </tr>
+                    <tr style="background: #f9f9f9;">
+                        <td style="padding: 12px; border: 1px solid #ddd;">Members</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">Payments</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;"><strong>1:N</strong></td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">One member makes many payments</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px; border: 1px solid #ddd;">Members</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">Attendance</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;"><strong>1:N</strong></td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">One member has many attendance records</td>
+                    </tr>
+                    <tr style="background: #f9f9f9;">
+                        <td style="padding: 12px; border: 1px solid #ddd;">Trainers</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">GymClasses</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;"><strong>1:N</strong></td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">One trainer can lead multiple classes</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px; border: 1px solid #ddd;">Branches</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">Equipment</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;"><strong>1:N</strong></td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">One branch has multiple equipment items</td>
+                    </tr>
+                    <tr style="background: #f9f9f9;">
+                        <td style="padding: 12px; border: 1px solid #ddd;">Members</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">ClassEnrollments</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;"><strong>N:M</strong></td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">Many members enroll in many classes</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px; border: 1px solid #ddd;">Members</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">MembershipPlans</td>
+                        <td style="padding: 12px; border: 1px solid #ddd;"><strong>N:M</strong></td>
+                        <td style="padding: 12px; border: 1px solid #ddd;">Many members subscribe to multiple plan types</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- SQL Code Examples -->
+        <div class="section" id="code-examples">
+            <h2 class="section-title">💻 SQL Code Examples</h2>
+            
+            <h3 class="subsection-title">Database Creation & Setup</h3>
+            <p>Initialize the GymManagementDB database with safe checks:</p>
+            <div class="code-label">DDL - Database Creation</div>
+            <div class="code-block">IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'GymManagementDB')
+    CREATE DATABASE GymManagementDB;
+GO
+USE GymManagementDB;
+GO</div>
+
+            <h3 class="subsection-title">Table Creation Examples</h3>
+            <p>Sample table structures demonstrating normalization and constraints:</p>
+            
+            <div class="code-label">DDL - Branches Table</div>
+            <div class="code-block">CREATE TABLE dbo.Branches (
+    BranchID      INT           IDENTITY(1,1) PRIMARY KEY,
+    BranchName    VARCHAR(100)  NOT NULL,
+    City          VARCHAR(80)   NOT NULL,
+    Address       VARCHAR(200)  NOT NULL,
+    PhoneNumber   VARCHAR(15)   NOT NULL,
+    Email         VARCHAR(100)  NOT NULL UNIQUE,
+    OpeningTime   VARCHAR(8)    NOT NULL DEFAULT '06:00',
+    ClosingTime   VARCHAR(8)    NOT NULL DEFAULT '22:00',
+    MonthlyRent   DECIMAL(10,2) NOT NULL CHECK (MonthlyRent > 0),
+    IsActive      BIT           NOT NULL DEFAULT 1
+);</div>
+
+            <div class="code-label">DDL - Members Table with FK</div>
+            <div class="code-block">CREATE TABLE dbo.Members (
+    MemberID         INT           IDENTITY(1,1) PRIMARY KEY,
+    BranchID         INT           NOT NULL REFERENCES dbo.Branches(BranchID),
+    FirstName        VARCHAR(60)   NOT NULL,
+    LastName         VARCHAR(60)   NOT NULL,
+    Gender           CHAR(1)       NOT NULL CHECK (Gender IN ('M','F','O')),
+    DateOfBirth      DATE          NOT NULL,
+    PhoneNumber      VARCHAR(15)   NOT NULL,
+    Email            VARCHAR(100)  NOT NULL UNIQUE,
+    Address          VARCHAR(200),
+    JoinDate         DATE          NOT NULL,
+    BloodGroup       VARCHAR(5)    CHECK (BloodGroup IN ('A+','A-','B+','B-','AB+','AB-','O+','O-')),
+    EmergencyContact VARCHAR(15)
+);</div>
+
+            <div class="code-label">DDL - Membership Plans Table</div>
+            <div class="code-block">CREATE TABLE dbo.MembershipPlans (
+    PlanID        INT           IDENTITY(1,1) PRIMARY KEY,
+    PlanName      VARCHAR(80)   NOT NULL UNIQUE,
+    DurationDays  INT           NOT NULL CHECK (DurationDays > 0),
+    Price         DECIMAL(10,2) NOT NULL CHECK (Price >= 0),
+    Description   VARCHAR(300),
+    MaxFreeze     INT           NOT NULL DEFAULT 0 CHECK (MaxFreeze >= 0)
+);</div>
+
+            <h3 class="subsection-title">Data Insertion Examples</h3>
+            <p>Sample DML operations for populating the database:</p>
+            
+            <div class="code-label">DML - Insert Branches</div>
+            <div class="code-block">INSERT INTO dbo.Branches (BranchName, City, Address, PhoneNumber, Email, OpeningTime, ClosingTime, MonthlyRent)
+VALUES
+('FitZone Central', 'Lahore', '12-A Main Boulevard, Gulberg III', '042-35771001', 'central@fitzone.pk', '05:30', '23:00', 180000.00),
+('FitZone DHA', 'Lahore', 'Plot 45, Phase 5, DHA', '042-35882002', 'dha@fitzone.pk', '06:00', '22:30', 210000.00),
+('FitZone Blue Area', 'Islamabad', 'Shop 9, Jinnah Avenue, Blue Area', '051-28834003', 'bluearea@fitzone.pk', '06:00', '22:00', 250000.00),
+('FitZone Johar', 'Karachi', '3rd Floor, Ocean Mall, Johar Town', '021-34455004', 'johar@fitzone.pk', '07:00', '22:00', 195000.00),
+('FitZone Cantt', 'Rawalpindi', 'Mall Road, Saddar Cantt', '051-55276005', 'cantt@fitzone.pk', '06:30', '21:30', 160000.00);</div>
+
+            <div class="code-label">DML - Insert Members</div>
+            <div class="code-block">INSERT INTO dbo.Members (BranchID, FirstName, LastName, Gender, DateOfBirth, PhoneNumber, Email, Address, JoinDate, BloodGroup, EmergencyContact)
+VALUES
+(1,'Ali', 'Hassan', 'M', '1995-04-12', '0320-0000001', 'ali.hassan@mail.com', 'House 5, Gulberg II', '2023-01-15', 'O+', '0300-1234561'),
+(1,'Sara', 'Khan', 'F', '1998-07-22', '0320-0000002', 'sara.khan@mail.com', 'Flat 3B, Garden Town', '2023-02-01', 'A+', '0300-1234562'),
+(2,'Ayesha', 'Noor', 'F', '2000-01-30', '0320-0000004', 'ayesha.noor@mail.com', 'DHA Phase 6 Blk C', '2023-01-20', 'AB+', '0300-1234564');</div>
+
+            <div class="code-label">DML - Insert Membership Plans</div>
+            <div class="code-block">INSERT INTO dbo.MembershipPlans (PlanName, DurationDays, Price, Description, MaxFreeze)
+VALUES
+('Monthly Basic', 30, 5000.00, 'Gym access only, no classes', 3),
+('Monthly Premium', 30, 8500.00, 'Gym + unlimited group classes', 5),
+('Quarterly Basic', 90, 13500.00, 'Gym access for 3 months', 7),
+('Quarterly Premium', 90, 22000.00, 'Gym + classes for 3 months', 10),
+('Annual Basic', 365, 48000.00, 'Full-year gym access', 14),
+('Annual Premium', 365, 72000.00, 'Full-year gym + all classes + PT', 20);</div>
+
+            <h3 class="subsection-title">Transaction Control Examples</h3>
+            <p>Implementing ACID properties with TCL:</p>
+            
+            <div class="code-label">TCL - Transaction with Error Handling</div>
+            <div class="code-block">BEGIN TRANSACTION;
+BEGIN TRY
+    -- Insert new member
+    INSERT INTO dbo.Members (BranchID, FirstName, LastName, Gender, DateOfBirth, PhoneNumber, Email, JoinDate)
+    VALUES (1, 'Hamza', 'Ali', 'M', '1996-05-15', '0321-1234567', 'hamza.ali@mail.com', GETDATE());
+    
+    -- Get inserted MemberID
+    DECLARE @MemberID INT = SCOPE_IDENTITY();
+    
+    -- Assign membership plan
+    INSERT INTO dbo.MemberMemberships (MemberID, PlanID, StartDate, EndDate, Status)
+    VALUES (@MemberID, 2, GETDATE(), DATEADD(DAY, 30, GETDATE()), 'Active');
+    
+    COMMIT TRANSACTION;
+    PRINT 'Member and membership added successfully';
+END TRY
+BEGIN CATCH
+    ROLLBACK TRANSACTION;
+    PRINT 'Transaction rolled back: ' + ERROR_MESSAGE();
+END CATCH;</div>
+
+            <div class="code-label">TCL - Savepoint Example</div>
+            <div class="code-block">BEGIN TRANSACTION;
+    INSERT INTO dbo.Branches (BranchName, City, Address, PhoneNumber, Email, MonthlyRent) 
+    VALUES ('NewBranch', 'Multan', 'Address', '061-1234567', 'new@fitzone.pk', 150000);
+    
+    SAVE TRANSACTION SP1;
+    
+    -- Additional operations that might fail
+    INSERT INTO dbo.Staff (BranchID, FirstName, LastName, Role, Salary, HireDate, PhoneNumber, Email)
+    VALUES (6, 'Ahmad', 'Khan', 'Manager', 85000, GETDATE(), '0300-1111111', 'ahmad@fitzone.pk');
+    
+COMMIT TRANSACTION;</div>
+
+            <h3 class="subsection-title">Index Creation</h3>
+            <p>Performance optimization through strategic indexing:</p>
+            
+            <div class="code-label">DDL - Create Indexes</div>
+            <div class="code-block">-- Member lookup optimization
+CREATE INDEX IX_Members_BranchID ON dbo.Members(BranchID);
+
+-- Attendance reporting indexes
+CREATE INDEX IX_Attendance_MemberID ON dbo.Attendance(MemberID);
+CREATE INDEX IX_Attendance_CheckInDate ON dbo.Attendance(CheckInDate);
+
+-- Payment analysis index
+CREATE INDEX IX_Payments_MemberID ON dbo.Payments(MemberID);
+
+-- Class enrollment queries
+CREATE INDEX IX_ClassEnrollments_Member ON dbo.ClassEnrollments(MemberID);</div>
+
+            <h3 class="subsection-title">Advanced Query Examples</h3>
+            <p>Complex SQL operations demonstrating advanced concepts:</p>
+            
+            <div class="code-label">DML - Multi-Table JOIN Query</div>
+            <div class="code-block">-- Q-06: Class listings with trainer and branch details
+SELECT c.ClassName, c.ClassType, c.ScheduleDay,
+       t.FirstName + ' ' + t.LastName AS TrainerName,
+       b.BranchName
+FROM   dbo.GymClasses c
+JOIN   dbo.Trainers t ON c.TrainerID = t.TrainerID
+JOIN   dbo.Branches b ON c.BranchID = b.BranchID;</div>
+
+            <div class="code-label">DML - Aggregation with HAVING</div>
+            <div class="code-block">-- Q-09: Members with more than 1 attendance check-in
+SELECT m.FirstName, m.LastName, COUNT(a.AttendanceID) AS TotalVisits
+FROM   dbo.Attendance a
+JOIN   dbo.Members m ON m.MemberID = a.MemberID
+GROUP BY m.FirstName, m.LastName
+HAVING COUNT(a.AttendanceID) > 1;</div>
+
+            <div class="code-label">DML - Correlated Subquery</div>
+            <div class="code-block">-- Q-18: Highest-paid trainer per branch
+SELECT t.FirstName, t.Salary, b.BranchName
+FROM   dbo.Trainers t
+JOIN   dbo.Branches b ON b.BranchID = t.BranchID
+WHERE  t.Salary = (SELECT MAX(Salary) FROM dbo.Trainers WHERE BranchID = t.BranchID);</div>
+
+            <div class="code-label">DML - LEFT JOIN with IS NULL</div>
+            <div class="code-block">-- Q-14: Members who have never checked in (No attendance record)
+SELECT m.MemberID, m.FirstName, m.LastName
+FROM   dbo.Members m
+LEFT JOIN dbo.Attendance a ON a.MemberID = m.MemberID
+WHERE  a.AttendanceID IS NULL;</div>
+
+            <div class="code-label">DML - Date Aggregation (Financial Report)</div>
+            <div class="code-block">-- Q-19: Monthly broken down transaction logs
+SELECT YEAR(PaymentDate) AS Year, MONTH(PaymentDate) AS Month, SUM(Amount) AS Revenue
+FROM   dbo.Payments
+GROUP BY YEAR(PaymentDate), MONTH(PaymentDate);</div>
+
+            <h3 class="subsection-title">DCL - User Permissions</h3>
+            <p>Security implementation with role-based access control:</p>
+            
+            <div class="code-label">DCL - Grant Read-Only Access</div>
+            <div class="code-block">-- Create database users
+CREATE USER StaffUser FROM LOGIN [domain\staffname];
+
+-- Grant SELECT permissions for read-only access
+GRANT SELECT ON dbo.Members TO StaffUser;
+GRANT SELECT ON dbo.Attendance TO StaffUser;
+GRANT SELECT ON dbo.Payments TO StaffUser;
+
+-- Deny destructive operations
+DENY DELETE ON dbo.Payments TO StaffUser;</div>
+
+            <div class="code-label">DCL - Grant Admin Permissions</div>
+            <div class="code-block">-- Create admin user
+CREATE USER AdminUser FROM LOGIN [domain\adminname];
+
+-- Grant full permissions to Admin
+GRANT SELECT, INSERT, UPDATE, DELETE ON dbo.Members TO AdminUser;
+GRANT SELECT, INSERT, UPDATE, DELETE ON dbo.Payments TO AdminUser;
+GRANT SELECT, INSERT, UPDATE, DELETE ON dbo.Branches TO AdminUser;</div>
+        </div>
+
+        <!-- SQL Features Section -->
+        <div class="section" id="technical">
+            <h2 class="section-title">🛠️ SQL Language Features Implemented</h2>
+            
+            <h3 class="subsection-title">DDL (Data Definition Language)</h3>
+            <p>Complete table creation with comprehensive schema design including:</p>
+            <ul class="info-list">
+                <li>11 normalized tables following 3NF principles</li>
+                <li>Primary key and foreign key relationships</li>
+                <li>Check constraints for data validation</li>
+                <li>Unique constraints for data integrity</li>
+                <li>Default values for operational efficiency</li>
+                <li>Strategic indexing for performance</li>
+            </ul>
+
+            <h3 class="subsection-title">DML (Data Manipulation Language)</h3>
+            <p>Comprehensive sample data insertion with:</p>
+            <ul class="info-list">
+                <li>5 branch locations across Pakistan</li>
+                <li>8 professional staff members</li>
+                <li>8 certified trainers with specializations</li>
+                <li>15 active gym members</li>
+                <li>6 flexible membership plans</li>
+                <li>20 membership assignments</li>
+                <li>8 scheduled fitness classes</li>
+                <li>20 class enrollments</li>
+                <li>15 equipment items across branches</li>
+                <li>20 attendance records</li>
+                <li>20 payment transactions</li>
+            </ul>
+
+            <h3 class="subsection-title">DCL (Data Control Language)</h3>
+            <p>Security and access control implementation including:</p>
+            <ul class="info-list">
+                <li>User role creation and management</li>
+                <li>Permission grants for SELECT, INSERT, UPDATE operations</li>
+                <li>DELETE permission restrictions for audit trails</li>
+                <li>Role-based access control (Admin vs. Staff)</li>
+            </ul>
+
+            <h3 class="subsection-title">TCL (Transaction Control Language)</h3>
+            <p>Data consistency and reliability features:</p>
+            <ul class="info-list">
+                <li>BEGIN TRANSACTION blocks for atomic operations</li>
+                <li>COMMIT for successful transaction completion</li>
+                <li>ROLLBACK with error handling (TRY-CATCH)</li>
+                <li>SAVEPOINT implementation for partial rollbacks</li>
+            </ul>
+        </div>
+
+        <!-- Advanced Queries -->
+        <div class="section" id="queries">
+            <h2 class="section-title">📊 Comprehensive Query Suite (22 Queries)</h2>
+            <p>The database includes 22 production-ready SQL queries covering all CLOs (Course Learning Outcomes) and business requirements:</p>
+
+            <div class="queries-section">
+                <!-- Row 1 -->
+                <div class="query-card">
+                    <span class="query-number">1</span><span class="query-title">Member Directory with Branch Details</span>
+                    <div class="query-description">JOIN operation retrieving all members with their associated branch information and contact details, ordered by branch and surname.</div>
+                </div>
+
+                <div class="query-card">
+                    <span class="query-number">2</span><span class="query-title">Member Count per Branch</span>
+                    <div class="query-description">Aggregation query using GROUP BY and COUNT to analyze membership distribution across all gym locations.</div>
+                </div>
+
+                <div class="query-card">
+                    <span class="query-number">3</span><span class="query-title">Active Memberships with Plan Details</span>
+                    <div class="query-description">Multi-table JOIN filtering active memberships, displaying plan pricing, duration, and freeze capabilities.</div>
+                </div>
+
+                <div class="query-card">
+                    <span class="query-number">4</span><span class="query-title">Revenue Analysis per Branch</span>
+                    <div class="query-description">SUM and GROUP BY aggregation calculating total revenue and transaction counts by branch location for financial reporting.</div>
+                </div>
+
+                <div class="query-card">
+                    <span class="query-number">5</span><span class="query-title">Trainer Roster with Compensation</span>
+                    <div class="query-description">JOIN query displaying all active trainers, their specializations, certifications, experience level, and salary information.</div>
+                </div>
+
+                <div class="query-card">
+                    <span class="query-number">6</span><span class="query-title">Class Listings with Trainer & Branch</span>
+                    <div class="query-description">3-table JOIN retrieving all class names, types, schedule days, assigned trainer names, and the branch they are held at.</div>
+                </div>
+
+                <div class="query-card">
+                    <span class="query-number">7</span><span class="query-title">Class-Enrolled Members</span>
+                    <div class="query-description">Subquery with IN operator identifying all members currently enrolled in at least one fitness class.</div>
+                </div>
+
+                <div class="query-card">
+                    <span class="query-number">8</span><span class="query-title">Equipment Condition Summary</span>
+                    <div class="query-description">GROUP BY query analyzing equipment status distribution and asset value by condition and branch.</div>
+                </div>
+
+                <div class="query-card">
+                    <span class="query-number">9</span><span class="query-title">Most Active Members</span>
+                    <div class="query-description">HAVING clause query identifying members with attendance > 1 visit, ranked by gym attendance frequency.</div>
+                </div>
+
+                <div class="query-card">
+                    <span class="query-number">10</span><span class="query-title">Payment Method Analytics</span>
+                    <div class="query-description">Aggregation showing transaction breakdown by payment method with transaction volume count and total revenue per method.</div>
+                </div>
+
+                <div class="query-card">
+                    <span class="query-number">11</span><span class="query-title">Premium Plan Members</span>
+                    <div class="query-description">LIKE pattern matching retrieving members subscribed to premium membership plans with validity dates.</div>
+                </div>
+
+                <div class="query-card">
+                    <span class="query-number">12</span><span class="query-title">Fully Booked Classes</span>
+                    <div class="query-description">HAVING clause query identifying classes that have reached maximum capacity with current enrollment status.</div>
+                </div>
+
+                <div class="query-card">
+                    <span class="query-number">13</span><span class="query-title">Staff Directory</span>
+                    <div class="query-description">JOIN query displaying complete staff roster with roles, compensation, hire dates, and branch assignments.</div>
+                </div>
+
+                <div class="query-card">
+                    <span class="query-number">14</span><span class="query-title">Non-Attending Members</span>
+                    <div class="query-description">LEFT JOIN with IS NULL filter identifying members who have never checked in to the gym.</div>
+                </div>
+
+                <div class="query-card">
+                    <span class="query-number">15</span><span class="query-title">Membership Plan Popularity</span>
+                    <div class="query-description">LEFT JOIN with GROUP BY analyzing plan purchase frequency and member usage of freeze benefits.</div>
+                </div>
+
+                <div class="query-card">
+                    <span class="query-number">16</span><span class="query-title">Equipment Requiring Maintenance</span>
+                    <div class="query-description">WHERE with IN operator filtering equipment in "Under Repair" or "Retired" status requiring attention.</div>
+                </div>
+
+                <div class="query-card">
+                    <span class="query-number">17</span><span class="query-title">Track Members with Expired Memberships</span>
+                    <div class="query-description">JOIN with WHERE clause filtering members whose membership status is 'Expired', grouped to show the most recent expiry date per member.</div>
+                </div>
+
+                <div class="query-card">
+                    <span class="query-number">18</span><span class="query-title">Highest-Paid Trainer per Branch</span>
+                    <div class="query-description">Correlated subquery finding the maximum salary trainer in each branch location for compensation analysis.</div>
+                </div>
+
+                <div class="query-card">
+                    <span class="query-number">19</span><span class="query-title">Monthly Revenue Summary</span>
+                    <div class="query-description">YEAR/MONTH date grouping aggregating total payment amounts per calendar month for financial trending.</div>
+                </div>
+
+                <div class="query-card">
+                    <span class="query-number">20</span><span class="query-title">Full Member Profile</span>
+                    <div class="query-description">Complex multi-table JOIN combining member details, active plans, enrolled classes, and trainer information.</div>
+                </div>
+
+                <div class="query-card">
+                    <span class="query-number">21</span><span class="query-title">Monthly Operating Cost Estimation</span>
+                    <div class="query-description">Multi-branch aggregation calculating total operational expenses including rent and personnel costs.</div>
+                </div>
+
+                <div class="query-card">
+                    <span class="query-number">22</span><span class="query-title">Emergency Preparedness - Blood Type Analysis</span>
+                    <div class="query-description">WHERE with IN filter retrieving members with critical blood types (O+, AB+) for emergency medical response.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Technical Specifications -->
+        <div class="section">
+            <h2 class="section-title">💻 Technical Specifications</h2>
+            <div style="background: #f9f9f9; padding: 20px; border-radius: 8px; margin: 20px 0;">
+                <ul class="info-list">
+                    <li><strong>Database Engine:</strong> Microsoft SQL Server (SSMS Compatible)</li>
+                    <li><strong>Normalization Level:</strong> Third Normal Form (3NF)</li>
+                    <li><strong>Database Name:</strong> GymManagementDB</li>
+                    <li><strong>Total Tables:</strong> 11 core tables</li>
+                    <li><strong>Total Indexes:</strong> 6 strategic performance indexes</li>
+                    <li><strong>Relationships:</strong> Full referential integrity with foreign keys</li>
+                    <li><strong>Sample Data:</strong> 110+ realistic business records</li>
+                    <li><strong>Query Set:</strong> 22 comprehensive SELECT queries</li>
+                    <li><strong>Compliance:</strong> DCL, DML, DDL, and TCL fully implemented</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Implementation Notes -->
+        <div class="section" id="implementation">
+            <h2 class="section-title">📝 Implementation Notes</h2>
+            <h3 class="subsection-title">Database Initialization</h3>
+            <p>The SQL script includes safe re-run capabilities with automatic DROP IF EXISTS checks, allowing multiple executions without conflict.</p>
+            
+            <h3 class="subsection-title">Transaction Management</h3>
+            <p>All DML operations are wrapped in explicit transactions with TRY-CATCH error handling and ROLLBACK capability. Savepoints are available for granular transaction control.</p>
+            
+            <h3 class="subsection-title">Real-World Business Data</h3>
+            <p>Sample data reflects authentic Pakistani gym operations including:</p>
+            <ul class="info-list">
+                <li>Local branch names and Lahore-based locations</li>
+                <li>Pakistan phone number format (03XX-XXXXXXX)</li>
+                <li>Pakistani personal names and cultural context</li>
+                <li>Realistic salary ranges and pricing structures</li>
+                <li>Authentic dates and operational timestamps</li>
+            </ul>
+        </div>
+
+        <!-- Use Cases -->
+        <div class="section" id="use-cases">
+            <h2 class="section-title">🎯 Business Use Cases Supported</h2>
+            <div class="features-grid">
+                <div class="feature-box">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-title">Management Reporting</div>
+                    <div class="feature-desc">Generate comprehensive reports on revenue, membership trends, member engagement, and operational efficiency.</div>
+                </div>
+                <div class="feature-box">
+                    <div class="feature-icon">💼</div>
+                    <div class="feature-title">Operational Planning</div>
+                    <div class="feature-desc">Analyze staff costs, class scheduling, equipment maintenance, and resource allocation across branches.</div>
+                </div>
+                <div class="feature-box">
+                    <div class="feature-icon">👤</div>
+                    <div class="feature-title">Member Services</div>
+                    <div class="feature-desc">Manage member profiles, attendance tracking, membership renewals, and emergency contact information.</div>
+                </div>
+                <div class="feature-box">
+                    <div class="feature-icon">💵</div>
+                    <div class="feature-title">Financial Management</div>
+                    <div class="feature-desc">Track payments, revenue streams, payment methods, and generate financial summaries by period and branch.</div>
+                </div>
+                <div class="feature-box">
+                    <div class="feature-icon">🏋️‍♂️</div>
+                    <div class="feature-title">Program Management</div>
+                    <div class="feature-desc">Schedule classes, assign trainers, manage enrollments, and track member participation in fitness programs.</div>
+                </div>
+                <div class="feature-box">
+                    <div class="feature-icon">📋</div>
+                    <div class="feature-title">Inventory Control</div>
+                    <div class="feature-desc">Maintain equipment records, track maintenance needs, monitor asset value, and manage warranty information.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Course Learning Outcomes -->
+        <div class="section">
+            <h2 class="section-title">🎓 Course Learning Outcomes Addressed</h2>
+            <p>This comprehensive project demonstrates mastery of all major database concepts:</p>
+            <ul class="info-list">
+                <li>Database design and normalization principles (3NF)</li>
+                <li>Entity-Relationship (ER) modeling and schema design</li>
+                <li>Structured Query Language (SQL) fundamentals</li>
+                <li>Data Definition Language (DDL) - Table creation and schema management</li>
+                <li>Data Manipulation Language (DML) - Data insertion and modification</li>
+                <li>Data Control Language (DCL) - User permissions and security</li>
+                <li>Transaction Control Language (TCL) - ACID properties and rollback mechanisms</li>
+                <li>JOIN operations - INNER, LEFT, OUTER joins</li>
+                <li>Subqueries and correlated subqueries</li>
+                <li>Aggregation functions (COUNT, SUM, AVG, MAX, MIN)</li>
+                <li>GROUP BY and HAVING clauses</li>
+                <li>Index creation for query optimization</li>
+                <li>Constraints and referential integrity</li>
+                <li>Complex multi-table queries and reporting</li>
+                <li>Error handling and transaction management</li>
+            </ul>
+        </div>
+
+        <!-- Conclusion -->
+        <div class="section" style="background: linear-gradient(135deg, #f0f4ff 0%, #e8f1ff 100%);">
+            <h2 class="section-title">✅ Conclusion</h2>
+            <p>The Gym Management Database is a production-ready RDBMS that demonstrates comprehensive understanding of relational database design, SQL query optimization, and real-world business application development. The system successfully implements all four SQL language categories (DDL, DML, DCL, TCL) with proper normalization, referential integrity, transaction management, and performance optimization through strategic indexing.</p>
+            <p style="margin-top: 15px;">This project serves as a complete template for multi-branch enterprise database systems and can be extended with additional features such as mobile app integration, real-time analytics, and advanced reporting dashboards.</p>
+        </div>
+
+        <!-- APPENDIX -->
+        <div class="section" id="appendix">
+            <h2 class="section-title">📚 Appendix & References</h2>
+
+            <!-- A: Glossary of Terms -->
+            <div class="appendix-section">
+                <h3 class="subsection-title">A. Database & SQL Glossary</h3>
+                
+                <div class="glossary-item">
+                    <div class="glossary-term">ACID Properties</div>
+                    <div class="glossary-definition">Atomicity (all-or-nothing), Consistency (valid state), Isolation (no interference), Durability (permanent once committed) - fundamental properties of reliable database transactions.</div>
+                </div>
+
+                <div class="glossary-item">
+                    <div class="glossary-term">3NF (Third Normal Form)</div>
+                    <div class="glossary-definition">Database normalization standard that eliminates redundant data and ensures data dependencies. All non-key attributes depend on the primary key, and there are no transitive dependencies.</div>
+                </div>
+
+                <div class="glossary-item">
+                    <div class="glossary-term">Foreign Key (FK)</div>
+                    <div class="glossary-definition">A column or set of columns that creates a relationship between tables by referencing the primary key of another table, ensuring referential integrity.</div>
+                </div>
+
+                <div class="glossary-item">
+                    <div class="glossary-term">Primary Key (PK)</div>
+                    <div class="glossary-definition">A unique identifier for each record in a table. Cannot be NULL and uniquely identifies each row. Only one primary key per table.</div>
+                </div>
+
+                <div class="glossary-item">
+                    <div class="glossary-term">Index</div>
+                    <div class="glossary-definition">A database structure that improves query performance by creating a fast lookup mechanism, similar to a book's index. Crucial for performance optimization.</div>
+                </div>
+
+                <div class="glossary-item">
+                    <div class="glossary-term">JOIN Operations</div>
+                    <div class="glossary-definition">SQL operations combining data from multiple tables: INNER JOIN (matching records), LEFT JOIN (all left table records), OUTER JOIN (all records from both tables).</div>
+                </div>
+
+                <div class="glossary-item">
+                    <div class="glossary-term">Subquery</div>
+                    <div class="glossary-definition">A query nested within another query, used in WHERE, FROM, or SELECT clauses. Can be correlated (references outer query) or uncorrelated.</div>
+                </div>
+
+                <div class="glossary-item">
+                    <div class="glossary-term">Aggregation Functions</div>
+                    <div class="glossary-definition">Functions that operate on sets of data: COUNT (number of records), SUM (total), AVG (average), MIN (minimum), MAX (maximum).</div>
+                </div>
+
+                <div class="glossary-item">
+                    <div class="glossary-term">GROUP BY Clause</div>
+                    <div class="glossary-definition">SQL clause that groups rows with identical values in specified columns, used with aggregation functions for summarization.</div>
+                </div>
+
+                <div class="glossary-item">
+                    <div class="glossary-term">HAVING Clause</div>
+                    <div class="glossary-definition">Filter clause used with GROUP BY to filter groups based on aggregate function results. WHERE filters rows; HAVING filters groups.</div>
+                </div>
+
+                <div class="glossary-item">
+                    <div class="glossary-term">Constraint</div>
+                    <div class="glossary-definition">Rules applied to table columns: CHECK (valid values), UNIQUE (no duplicates), DEFAULT (default value), NOT NULL (required), PRIMARY KEY, FOREIGN KEY.</div>
+                </div>
+
+                <div class="glossary-item">
+                    <div class="glossary-term">Transaction</div>
+                    <div class="glossary-definition">A logical unit of work consisting of one or more SQL statements that must all succeed or all fail together, ensuring data consistency.</div>
+                </div>
+
+                <div class="glossary-item">
+                    <div class="glossary-term">SSMS (SQL Server Management Studio)</div>
+                    <div class="glossary-definition">Microsoft's integrated environment for managing and querying SQL Server databases. Used for executing this project's SQL scripts.</div>
+                </div>
+
+                <div class="glossary-item">
+                    <div class="glossary-term">IDENTITY Column</div>
+                    <div class="glossary-definition">Auto-incrementing column that automatically generates unique sequential numbers for each new record, commonly used for primary keys.</div>
+                </div>
+
+                <div class="glossary-item">
+                    <div class="glossary-term">Referential Integrity</div>
+                    <div class="glossary-definition">Database principle ensuring that relationships between tables remain consistent; prevents orphaned records through foreign key constraints.</div>
+                </div>
+            </div>
+
+            <!-- B: Entity Relationship Overview -->
+            <div class="appendix-section">
+                <h3 class="subsection-title">B. Entity Relationships & Data Flow</h3>
+                <p><strong>Primary Data Flow:</strong></p>
+                <ul class="info-list">
+                    <li>Branches → serve as organizational units for Members, Staff, Trainers, and Equipment</li>
+                    <li>Members → enroll in MembershipPlans and join Classes</li>
+                    <li>MembershipPlans → assigned to Members via MemberMemberships relationship</li>
+                    <li>Trainers → conduct GymClasses which Members enroll in</li>
+                    <li>Members → generate Payments and create Attendance records</li>
+                    <li>Equipment → maintained per Branch for member usage</li>
+                    <li>Staff → manages branch operations under Branches</li>
+                </ul>
+            </div>
+
+            <!-- C: Constraint Rules Summary -->
+            <div class="appendix-section">
+                <h3 class="subsection-title">C. Business Rules & Constraints Applied</h3>
+                <ul class="info-list">
+                    <li><strong>Salary Rule:</strong> All staff and trainer salaries must be ≥ 0 (non-negative values)</li>
+                    <li><strong>Price Rule:</strong> Membership prices must be > 0 (positive values only)</li>
+                    <li><strong>Duration Rule:</strong> Plan durations must exceed 0 days</li>
+                    <li><strong>Capacity Rule:</strong> Class maximum capacity must be > 0</li>
+                    <li><strong>Gender Rule:</strong> Only M (Male), F (Female), O (Other) accepted</li>
+                    <li><strong>Blood Group Rule:</strong> Limited to valid types (A+, A-, B+, B-, AB+, AB-, O+, O-)</li>
+                    <li><strong>Status Rule:</strong> Membership status restricted to: Active, Expired, Frozen, Cancelled</li>
+                    <li><strong>Equipment Condition:</strong> Only Excellent, Good, Fair, Under Repair, Retired allowed</li>
+                    <li><strong>Role Rule:</strong> Staff roles limited to: Manager, Receptionist, Janitor, Security</li>
+                    <li><strong>Class Type Rule:</strong> Classes must be: Yoga, Zumba, CrossFit, Pilates, Boxing, Cycling, Strength, Cardio</li>
+                    <li><strong>Payment Method Rule:</strong> Only Cash, Credit Card, Debit Card, Bank Transfer, Online accepted</li>
+                    <li><strong>Payment Status Rule:</strong> Status must be: Completed, Pending, Refunded, or Failed</li>
+                    <li><strong>Enrollment Status Rule:</strong> Only Enrolled, Dropped, or Completed states allowed</li>
+                    <li><strong>Unique Constraint:</strong> Each member can enroll in a class only once (Class-Member combination is unique)</li>
+                    <li><strong>Email Uniqueness:</strong> All email addresses must be unique across the system</li>
+                </ul>
+            </div>
+
+            <!-- D: Query Execution Guidelines -->
+            <div class="appendix-section">
+                <h3 class="subsection-title">D. Query Optimization & Execution Tips</h3>
+                <ul class="info-list">
+                    <li><strong>Index Usage:</strong> Queries on BranchID, MemberID, and CheckInDate benefit from existing indexes - expect 3-5x faster execution</li>
+                    <li><strong>Large Datasets:</strong> Use WHERE clauses to filter before JOIN operations for better performance</li>
+                    <li><strong>Aggregation:</strong> GROUP BY queries are optimized for branch-level and date-range reports</li>
+                    <li><strong>Date Ranges:</strong> Always use BETWEEN or date functions for attendance and payment historical queries</li>
+                    <li><strong>Transaction Safety:</strong> Always wrap multi-table operations in BEGIN-COMMIT-ROLLBACK blocks</li>
+                    <li><strong>Subquery Performance:</strong> Correlated subqueries (Q-18) are slower; use JOINs when possible for similar results</li>
+                    <li><strong>NULL Handling:</strong> Use IS NULL and IS NOT NULL carefully in LEFT JOINs to avoid missing data</li>
+                </ul>
+            </div>
+
+            <!-- E: Troubleshooting -->
+            <div class="appendix-section">
+                <h3 class="subsection-title">E. Common Issues & Troubleshooting</h3>
+                
+                <div class="glossary-item">
+                    <div class="glossary-term">❌ "Violation of PRIMARY KEY constraint"</div>
+                    <div class="glossary-definition">✓ Cause: Attempting to insert duplicate ID. Solution: Don't specify ID for IDENTITY columns; let SQL Server auto-generate.</div>
+                </div>
+
+                <div class="glossary-item">
+                    <div class="glossary-term">❌ "The INSERT, UPDATE, or DELETE statement conflicted with a FOREIGN KEY constraint"</div>
+                    <div class="glossary-definition">✓ Cause: Parent record doesn't exist. Solution: Ensure parent tables have corresponding records before inserting child records.</div>
+                </div>
+
+                <div class="glossary-item">
+                    <div class="glossary-term">❌ "Violation of UNIQUE constraint"</div>
+                    <div class="glossary-definition">✓ Cause: Duplicate email or plan name. Solution: Check existing values with SELECT before INSERT; use email validation.</div>
+                </div>
+
+                <div class="glossary-item">
+                    <div class="glossary-term">❌ "Check constraint violation"</div>
+                    <div class="glossary-definition">✓ Cause: Value violates CHECK constraint (e.g., negative price). Solution: Verify value meets constraint requirements before INSERT/UPDATE.</div>
+                </div>
+
+                <div class="glossary-item">
+                    <div class="glossary-term">❌ "Transaction (Process ID ##) was deadlocked"</div>
+                    <div class="glossary-definition">✓ Cause: Concurrent transactions competing for same resources. Solution: Reduce transaction scope; commit frequently; avoid nested transactions.</div>
+                </div>
+
+                <div class="glossary-item">
+                    <div class="glossary-term">❌ Query returns "Null values" unexpectedly</div>
+                    <div class="glossary-definition">✓ Cause: LEFT JOIN including non-matching rows with NULLs. Solution: Use COALESCE() function or INNER JOIN if matching required.</div>
+                </div>
+
+                <div class="glossary-item">
+                    <div class="glossary-term">❌ Permission Denied when accessing table</div>
+                    <div class="glossary-definition">✓ Cause: User role lacks SELECT/INSERT/UPDATE permissions. Solution: Grant appropriate permissions using GRANT statement; verify user login.</div>
+                </div>
+            </div>
+
+            <!-- F: Best Practices -->
+            <div class="appendix-section">
+                <h3 class="subsection-title">F. Database Design & Development Best Practices</h3>
+                <ul class="info-list">
+                    <li><strong>Normalization:</strong> Always design to at least 3NF to eliminate redundancy and maintain data integrity</li>
+                    <li><strong>Naming Convention:</strong> Use PascalCase for table names, camelCase for columns; prefix FKs with table name or "ID"</li>
+                    <li><strong>Comments:</strong> Document all complex queries, constraints, and business logic for future maintainers</li>
+                    <li><strong>Indexes:</strong> Index frequently queried columns; avoid over-indexing (slows writes); monitor query execution plans</li>
+                    <li><strong>Transactions:</strong> Keep transaction scope small; use appropriate isolation levels; avoid long-running transactions</li>
+                    <li><strong>Validation:</strong> Use CHECK constraints and triggers to enforce business rules at database level</li>
+                    <li><strong>Security:</strong> Always implement least-privilege access; use DCL to restrict permissions; never grant DELETE to non-admins</li>
+                    <li><strong>Backup:</strong> Regular backups of production data; test recovery procedures periodically</li>
+                    <li><strong>Monitoring:</strong> Track query performance; identify slow queries; analyze execution plans</li>
+                    <li><strong>Documentation:</strong> Maintain ER diagrams, data dictionary, and query documentation for team knowledge</li>
+                </ul>
+            </div>
+
+            <!-- G: Reference Materials -->
+            <div class="appendix-section">
+                <h3 class="subsection-title">G. Recommended References & Resources</h3>
+                <ul class="info-list">
+                    <li><strong>Microsoft SQL Server Documentation:</strong> Official SSMS and T-SQL reference guides</li>
+                    <li><strong>SQL Tutorial Sites:</strong> W3Schools SQL, LeetCode Database, HackerRank SQL challenges</li>
+                    <li><strong>Database Design Books:</strong> "Database Design for Mere Mortals" by Michael J. Hernandez</li>
+                    <li><strong>Performance Tuning:</strong> SQL Server Query Performance Tuning by Grant Fritchey</li>
+                    <li><strong>Advanced SQL:</strong> "SQL Performance Explained" for index strategies and query optimization</li>
+                    <li><strong>Transaction Management:</strong> Understanding SQL Server ACID properties and isolation levels</li>
+                </ul>
+            </div>
+
+            <!-- H: Sample Data Reference -->
+            <div class="appendix-section">
+                <h3 class="subsection-title">H. Sample Data Summary</h3>
+                <table style="width: 100%; margin-top: 15px; border-collapse: collapse;">
+                    <thead style="background: var(--primary-color); color: white;">
+                        <tr>
+                            <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Entity</th>
+                            <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Records</th>
+                            <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background: #f9f9f9;">
+                            <td style="padding: 10px; border: 1px solid #ddd;">Branches</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">5</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">5 major cities across Pakistan</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Staff</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">8</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Managers, Receptionists, Security</td>
+                        </tr>
+                        <tr style="background: #f9f9f9;">
+                            <td style="padding: 10px; border: 1px solid #ddd;">Trainers</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">8</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Certified professionals with specializations</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Members</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">15</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Active gym members across branches</td>
+                        </tr>
+                        <tr style="background: #f9f9f9;">
+                            <td style="padding: 10px; border: 1px solid #ddd;">Membership Plans</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">6</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Monthly, Quarterly, Annual Basic & Premium</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Member Memberships</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">20</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Member-Plan associations with expiry</td>
+                        </tr>
+                        <tr style="background: #f9f9f9;">
+                            <td style="padding: 10px; border: 1px solid #ddd;">Gym Classes</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">8</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Various fitness class types</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Class Enrollments</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">20</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Members enrolled in classes</td>
+                        </tr>
+                        <tr style="background: #f9f9f9;">
+                            <td style="padding: 10px; border: 1px solid #ddd;">Equipment</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">15</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Cardio, strength, flexibility equipment</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Attendance</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">20</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Member check-in/check-out records</td>
+                        </tr>
+                        <tr style="background: #f9f9f9;">
+                            <td style="padding: 10px; border: 1px solid #ddd;">Payments</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">20</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">Membership and transaction records</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- I: Project Statistics -->
+            <div class="appendix-section">
+                <h3 class="subsection-title">I. Project Statistics & Metrics</h3>
+                <ul class="info-list">
+                    <li><strong>Total Lines of SQL Code:</strong> 2,500+ lines</li>
+                    <li><strong>Database Tables:</strong> 11 normalized tables</li>
+                    <li><strong>Total Columns:</strong> 85+ columns across all tables</li>
+                    <li><strong>Foreign Key Relationships:</strong> 15+ referential integrity constraints</li>
+                    <li><strong>Indexes Created:</strong> 6 performance optimization indexes</li>
+                    <li><strong>Check Constraints:</strong> 25+ business rule validations</li>
+                    <li><strong>Sample Data Records:</strong> 110+ realistic test records</li>
+                    <li><strong>SELECT Queries:</strong> 22 comprehensive analytical queries</li>
+                    <li><strong>Query Categories:</strong> JOINs, Aggregations, Subqueries, Date Functions, Window Functions</li>
+                    <li><strong>Documentation Pages:</strong> Complete ER diagrams, schema documentation, query explanations</li>
+                </ul>
+            </div>
+
+            <!-- J: Version History -->
+            <div class="appendix-section">
+                <h3 class="subsection-title">J. Project Version & Changelog</h3>
+                <ul class="info-list">
+                    <li><strong>Version:</strong> 1.0 (Final)</li>
+                    <li><strong>Release Date:</strong> Spring 2026</li>
+                    <li><strong>Database System:</strong> Microsoft SQL Server (SSMS)</li>
+                    <li><strong>Normalization Level:</strong> 3NF (Third Normal Form)</li>
+                    <li><strong>Initial Release:</strong> Complete DDL, DML, DCL, TCL implementation with comprehensive query suite</li>
+                    <li><strong>Future Enhancements:</strong> Stored procedures, views, triggers, replication, data warehousing</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="footer-content">
+            <div class="footer-title">Gym Management Database - Spring 2026</div>
+            <div class="footer-text">
+                <p>University of Management and Technology (UMT), Lahore</p>
+                <p>Department of Artificial Intelligence | Course: Database Systems (CC230)</p>
+                <p style="margin-top: 15px; font-size: 0.9em; opacity: 0.8;">Instructor: Hafiza Daheem | Team Leader: Abu Talha Saleem (F2024376221)</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
